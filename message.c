@@ -97,6 +97,14 @@ parse_command(void *handle, char *message, split_t *tokens)
 			((IRCLIB *)handle)->callbacks[IRCLIB_PRIVMSG] (handle, nick, host, target, msgptr+1);
 
 		free(target);
+	} else if(strncmp(tok[1], "QUIT", 4) == 0) {
+		char *msgptr;
+
+		msgptr = strchr(message, ' ');
+		msgptr = strchr(msgptr+1, ':');
+
+		if(((IRCLIB *)handle)->callbacks[IRCLIB_QUIT] != NULL)
+			((IRCLIB *)handle)->callbacks[IRCLIB_QUIT] (handle, nick, msgptr+1);
 	}
 
 	if (nick != NULL)
