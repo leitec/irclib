@@ -58,9 +58,15 @@ parse_command(void *handle, char *message, split_t *tokens)
 	}
 
 	if (strncmp(tok[1], "JOIN", 4) == 0) {
-		datastart = strchr((char *) message + 1, ':');
+		char *chan;
+
+		if(tok[2][0] == ':')
+			chan = tok[2]+1;
+		else
+			chan = tok[2];
+
 		if (((IRCLIB *) handle)->callbacks[IRCLIB_JOIN] != NULL)
-			((IRCLIB *) handle)->callbacks[IRCLIB_JOIN] (handle, nick, host, datastart + 1);
+			((IRCLIB *) handle)->callbacks[IRCLIB_JOIN] (handle, nick, host, chan);
 	} else if (strncmp(tok[1], "PRIVMSG", 7) == 0) {
 		char           *destptr;
 
