@@ -22,6 +22,7 @@ i_free(split_t * s)
 		free(s->data[x]);
 
 	free(s->data);
+	free(s);
 }
 
 /* PROTO */
