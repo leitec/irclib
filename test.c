@@ -12,6 +12,16 @@
 
 #include "irclib.h"
 
+void
+irc_msg(void *handle, char *nick, char *host, char *target, char *message)
+{
+	if(target[0] == '#') {
+		printf("%s <%s> %s\n", target, nick, message);
+	} else {
+		printf("[%s(%s)] %s\n", nick, host, message);
+	}
+}
+
 void 
 irc_motd(void *handle, char *motd)
 {
@@ -44,6 +54,7 @@ main(void)
 	irclib_register_callback(handle, IRCLIB_MOTD, (void (*) (void *,...)) irc_motd);
 	irclib_register_callback(handle, IRCLIB_READY, (void (*) (void *,...)) irc_ready);
 	irclib_register_callback(handle, IRCLIB_JOIN, (void (*) (void *,...)) irc_join);
+	irclib_register_callback(handle, IRCLIB_PRIVMSG, (void (*) (void *,...)) irc_msg);
 
 	while (!irclib_connected(handle));
 

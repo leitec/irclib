@@ -26,3 +26,19 @@ irclib_join(void *handle, char *channel)
 	send_cmdpkt(handle, pkt);
 	pkt_free(pkt);
 }
+
+/* PROTO */
+void
+irclib_privmsg(void *handle, char *target, char *message)
+{
+	pkt_t *pkt;
+
+	pkt = pkt_init(10+strlen(target)+strlen(message));
+	pkt_addstr(pkt, "PRIVMSG ");
+	pkt_addstr(pkt, target);
+	pkt_addstr(pkt, " :");
+	pkt_addstr(pkt, message);
+	
+	send_cmdpkt(handle, pkt);
+	pkt_free(pkt);
+}

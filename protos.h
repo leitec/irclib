@@ -1,4 +1,5 @@
 void irclib_join (void *handle, char *channel);
+void irclib_privmsg (void *handle, char *target, char *message);
 void           * irclib_create_handle (void);
 void irclib_register_callback (void *handle, int event, void (*ptr) (void *,...));
 int irclib_connected (void *handle);

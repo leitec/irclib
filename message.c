@@ -31,7 +31,7 @@ parse_message(void *handle, char *message)
 		pkt_addstr(pingpkt, tok[1]);
 		send_cmdpkt(handle, pingpkt);
 		pkt_free(pingpkt);
-	} else {
+	} else if(message[0] == ':') {
 		numeric = strtol(tok[1], (char **)NULL, 10);
 		if(numeric == 0)
 			parse_command(handle, message, tokens);
@@ -44,7 +44,7 @@ parse_message(void *handle, char *message)
 void
 parse_command(void *handle, char *message, split_t *tokens)
 {
-	char           *nick = NULL, *host = NULL, *datastart;
+	char           *nick = NULL, *host = NULL;
 	char		*from = tok[0] + 1;
 	size_t          len;
 
@@ -67,16 +67,23 @@ parse_command(void *handle, char *message, split_t *tokens)
 
 		if (((IRCLIB *) handle)->callbacks[IRCLIB_JOIN] != NULL)
 			((IRCLIB *) handle)->callbacks[IRCLIB_JOIN] (handle, nick, host, chan);
+	} else if (strncmp(tok[1], "PART", 4) == 0) {
+		char *chan;
+
+		if(tok[2][0] == ':')
+			chan = tok[2]+1;
+		else
+			chan = tok[2];
+
+		if (((IRCLIB *) handle)->callbacks[IRCLIB_PART] != NULL)
+			((IRCLIB *) handle)->callbacks[IRCLIB_PART] (handle, nick, host, chan);
 	} else if (strncmp(tok[1], "PRIVMSG", 7) == 0) {
-		char           *destptr;
+		char *msgptr;
 
-		destptr = strchr((char *) message, ' ');
-		if (destptr != NULL) {
-			destptr = strchr(destptr + 1, ' ');
+		msgptr = strchr(message+1, ':');
 
-
-		}
-		printf("%s\n", (char *) message);
+		if(((IRCLIB *) handle)->callbacks[IRCLIB_PRIVMSG] != NULL)
+			((IRCLIB *)handle)->callbacks[IRCLIB_PRIVMSG] (handle, nick, host, tok[2], msgptr+1);
 	}
 
 	if (nick != NULL)
@@ -111,6 +118,6 @@ parse_numeric(void *handle, char *message, split_t *tokens, int numeric)
 		}
 		break;
 	default:
-		printf("!! %s\n", (char *) message);
+		break;
 	}
 }
