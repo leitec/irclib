@@ -88,13 +88,23 @@ parse_command(void *handle, char *message, split_t *tokens)
 		msgptr = strchr(message, ' ');
 		msgptr = strchr(msgptr+1, ':');
 
-		if(tok[2][0] == '#')
+		if(tok[2][0] == '#' || tok[2][0] == '&')
 			target = tolower_str(tok[2]);
 		else
 			target = strdup(tok[2]);
 
-		if(((IRCLIB *) handle)->callbacks[IRCLIB_PRIVMSG] != NULL)
-			((IRCLIB *)handle)->callbacks[IRCLIB_PRIVMSG] (handle, nick, host, target, msgptr+1);
+		if(msgptr[1] == 0x01 && msgptr[strlen(msgptr)-1] == 0x01) {
+			/*
+			 * we should handle some CTCP stuff right here,
+			 * not in the client
+			 */
+			msgptr[strlen(msgptr)-1] = 0;
+			if(((IRCLIB *)handle)->callbacks[IRCLIB_CTCP] != NULL)
+				((IRCLIB *)handle)->callbacks[IRCLIB_CTCP] (handle, nick, host, target, msgptr+2);
+		} else { 
+			if(((IRCLIB *) handle)->callbacks[IRCLIB_PRIVMSG] != NULL)
+				((IRCLIB *)handle)->callbacks[IRCLIB_PRIVMSG] (handle, nick, host, target, msgptr+1);
+		}
 
 		free(target);
 	} else if(strncmp(tok[1], "QUIT", 4) == 0) {
