@@ -12,6 +12,7 @@
 
 #include "irclib.h"
 
+/* PROTO */
 void 
 i_free(split_t * s)
 {
@@ -23,6 +24,7 @@ i_free(split_t * s)
 	free(s->data);
 }
 
+/* PROTO */
 split_t        *
 i_split(char *str)
 {
@@ -40,8 +42,8 @@ i_split(char *str)
 	stmp->data = malloc(sizeof(uint8_t *) * num);
 	stmp->num = num;
 
-	for (x = 0, y = 0, cur = 0; x < len; x++) {
-		if (str[x] == ' ' || x == len - 1) {
+	for (x = 0, y = 0, cur = 0; x <= len; x++) {
+		if (str[x] == ' ' || x == len) {
 			stmp->data[cur] = malloc(x - y + 1);
 			memcpy(stmp->data[cur], str + y, x - y);
 			stmp->data[cur][x - y] = 0;

@@ -33,6 +33,22 @@ sendPkt(void *handle, pkt_t * packet)
 }
 
 /* PROTO */
+ssize_t
+send_cmdpkt(void *handle, pkt_t *packet)
+{
+	pkt_t *n;
+	ssize_t ret;
+
+	n = pkt_init(2+packet->len);
+	pkt_addraw(n, packet->data, packet->len);
+	pkt_addraw(n, (unsigned char *)"\r\n", 2);
+
+	ret = sendPkt(handle, n);
+	pkt_free(n);
+	return ret;
+}
+
+/* PROTO */
 size_t
 chrdist(char *str, char ch)
 {

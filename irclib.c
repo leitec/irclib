@@ -171,7 +171,7 @@ irclib_select(int nfds, fd_set * readfds, fd_set * writefds, fd_set * exceptfds,
 				bytesparsed += nextcr + 2;
 				bufptr += nextcr + 2;
 
-				parse_message(tmp->handle, messagestr);
+				parse_message(tmp->handle, (char *)messagestr);
 				free(messagestr);
 			}
 

@@ -12,57 +12,30 @@
 
 #include "irclib.h"
 
+#define tok tokens->data
+
 /* PROTO */
 void
-parse_message(void *handle, unsigned char *message)
+parse_message(void *handle, char *message)
 {
-	size_t          len = strlen((char *) message);
-	size_t          dst, dst2;
-	int             numeric;
-	unsigned char  *from, *msgcode;
+	split_t		*tokens;
+	size_t x;
 
-	if (message[0] == ':') {
-		dst = chrdist((char *) message, ' ');
-		if (dst != 0) {
-			from = malloc(dst);
-			memcpy(from, message + 1, dst - 1);
-			from[dst - 1] = 0;
+	tokens = i_split(message);
+	for(x = 0; x < tokens->num; x++)
+		printf("[%s] ", tok[x]);
 
-			dst2 = chrdist((char *) message + dst + 1, ' ');
-			msgcode = malloc(dst2 + 1);
-			memcpy(msgcode, message + dst + 1, dst2);
-			msgcode[dst2] = 0;
-			if (sscanf((char *) msgcode, "%d", &numeric) == 0) {
-				parse_command(handle, message, from, msgcode);
-			} else {
-				parse_numeric(handle, message, numeric);
-			}
+	printf("\n");
 
-			free(from);
-			free(msgcode);
-		} else {
-			printf("ERROR: Server sent us something funky.\n");
-			return;
-		}
-	} else {
-		if (len > 4) {
-			if (strncmp((char *) message, "PING ", 5) == 0) {
-				pkt_t          *pong;
+	if(strncmp(tok[0], "PING", 4) == 0) {
+		pkt_t *pingpkt;
 
-				pong = pkt_init(len + 3);
-				pkt_addstr(pong, "PONG ");
-				pkt_addraw(pong, message + 5, len - 5);
-				pkt_addstr(pong, "\r\n\0");
-				printf("%s\n", pong->data);
-
-				sendPkt(handle, pong);
-				pkt_free(pong);
-				printf("Sent PONG.\n");
-				return;
-			}
-		}
+		pingpkt = pkt_init(5+strlen(tok[1]));
+		pkt_addstr(pingpkt, "PONG ");
+		pkt_addstr(pingpkt, tok[1]);
+		send_cmdpkt(handle, pingpkt);
+		pkt_free(pingpkt);
 	}
-
 }
 
 /* PROTO */

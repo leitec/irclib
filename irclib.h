@@ -93,7 +93,7 @@ enum {
 
 typedef struct Split {
 	size_t          num;
-	uint8_t       **data;
+	char       **data;
 }               split_t;
 
 typedef struct IRCLib {
