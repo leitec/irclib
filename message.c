@@ -80,7 +80,8 @@ parse_command(void *handle, char *message, split_t *tokens)
 	} else if (strncmp(tok[1], "PRIVMSG", 7) == 0) {
 		char *msgptr;
 
-		msgptr = strchr(message+1, ':');
+		msgptr = strchr(message, ' ');
+		msgptr = strchr(msgptr+1, ':');
 
 		if(((IRCLIB *) handle)->callbacks[IRCLIB_PRIVMSG] != NULL)
 			((IRCLIB *)handle)->callbacks[IRCLIB_PRIVMSG] (handle, nick, host, tok[2], msgptr+1);
