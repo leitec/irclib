@@ -91,8 +91,13 @@ parse_command(void *handle, char *message, split_t *tokens)
 		msgptr = strchr(message, ' ');
 		msgptr = strchr(msgptr+1, ':');
 
-		if(((IRCLIB *) handle)->callbacks[IRCLIB_NOTICE] != NULL)
-			((IRCLIB *)handle)->callbacks[IRCLIB_NOTICE] (handle, nick, host, msgptr+1);
+		if(((IRCLIB *) handle)->callbacks[IRCLIB_NOTICE] != NULL) {
+			if(nick == NULL) {
+				((IRCLIB *)handle)->callbacks[IRCLIB_NOTICE] (handle, from, NULL, msgptr+1);
+			} else {
+				((IRCLIB *)handle)->callbacks[IRCLIB_NOTICE] (handle, nick, host, msgptr+1);
+			}
+		}
 	} else if (strncmp(tok[1], "PRIVMSG", 7) == 0) {
 		char *msgptr;
 		char *target;
