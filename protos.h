@@ -6,6 +6,8 @@ void           * irclib_create_handle (void);
 void irclib_register_callback (void *handle, int event, void (*ptr) (void *,...));
 int irclib_connected (void *handle);
 IRCLIB_RET irclib_setnick (void *handle, char *nickname);
+void irclib_setname (void *handle, char *name);
+void irclib_setusername (void *handle, char *name);
 IRCLIB_RET irclib_select (int nfds, fd_set * readfds, fd_set * writefds, fd_set * exceptfds, struct timeval * timeout);
 void parse_message (void *handle, char *message);
 void parse_command (void *handle, char *message, split_t *tokens);

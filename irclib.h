@@ -10,12 +10,6 @@
  ** Please see the COPYING file for more details.
  **/
 
-/**
- ** irclib - Unimaginatively titled IRC library
- **
- ** Written by Claudio Leite
- **/
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -113,6 +107,7 @@ typedef struct IRCLib {
 	void            (*callbacks[NUM_CALLBACKS]) (void *,...);
 	char           *nickname;
 	char           *realname;
+	char	       *username;
 	unsigned char  *buffered;
 	size_t          waiting_len;
 	int             isidle;

@@ -54,6 +54,7 @@ irclib_create_handle(void)
 
 	irclib_setnick((void *) h, "NoName");
 	h->realname = strdup("IRClib User");
+	h->username = strdup("irclib");
 
 	return (void *) h;
 }
@@ -93,6 +94,26 @@ irclib_setnick(void *handle, char *nickname)
 		pkt_free(nickpkt);
 	}
 	return IRCLIB_RET_OK;
+}
+
+/* PROTO */
+void
+irclib_setname(void *handle, char *name)
+{
+	if(((IRCLIB *)handle)->realname != NULL)
+		free(((IRCLIB *)handle)->realname);
+
+	((IRCLIB *)handle)->realname = strdup(name);
+}
+
+/* PROTO */
+void
+irclib_setusername(void *handle, char *name)
+{
+	if(((IRCLIB *)handle)->username != NULL)
+		free(((IRCLIB *)handle)->username);
+
+	((IRCLIB *)handle)->username = strdup(name);
 }
 
 /* PROTO */
