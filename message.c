@@ -116,6 +116,8 @@ void
 parse_numeric(void *handle, char *message, split_t *tokens, int numeric)
 {
 	unsigned char *datastart;
+	char *chan;
+	size_t x;
 
 	switch (numeric) {
 	case 001:
@@ -123,6 +125,22 @@ parse_numeric(void *handle, char *message, split_t *tokens, int numeric)
 	case 003:
 	case 004:
 	case 005:
+		break;
+	case 353:
+		chan = tok[4];
+		for(x = 5; x < tokens->num; x++) {
+			if(((IRCLIB *)handle)->callbacks[IRCLIB_CHANUSER] != NULL) {
+				if(tok[x][0] == ':')
+					((IRCLIB *)handle)->callbacks[IRCLIB_CHANUSER](handle, chan, tok[x]+1);
+				else
+					((IRCLIB *)handle)->callbacks[IRCLIB_CHANUSER](handle, chan, tok[x]);
+			}
+		}
+		break;
+	case 366:
+		chan = tok[3];
+		if(((IRCLIB *)handle)->callbacks[IRCLIB_NAMESDONE] != NULL)
+			((IRCLIB *)handle)->callbacks[IRCLIB_NAMESDONE](handle, chan);
 		break;
 	case 372:
 	case 375:
