@@ -48,7 +48,8 @@ parse_command(void *handle, char *message, split_t *tokens)
 {
 	char           *nick = NULL, *host = NULL;
 	char		*from = tok[0] + 1;
-	size_t          len;
+	size_t          len, toklen;
+	int		argnum = 0, pos;
 
 	if (strchr((char *) from, '!') != NULL) {
 		len = chrdist((char *) from, '!');
@@ -107,6 +108,32 @@ parse_command(void *handle, char *message, split_t *tokens)
 		}
 
 		free(target);
+	} else if(strncmp(tok[1], "MODE", 4) == 0) {
+		int plus = 1;
+
+		if(tok[3][0] == ':')
+			pos = 1;
+		else
+			pos = 0;
+
+		toklen = strlen(tok[3]);
+
+		for(; pos < toklen; pos++) {
+			if(tok[3][pos] == '+') {
+				plus = 1;
+				continue;
+			} else if(tok[3][pos] == '-') {
+				plus = 0;
+				continue;
+			}
+
+			if(tok[3][pos] == 'o') {
+				if(((IRCLIB *)handle)->callbacks[IRCLIB_MODE] != NULL)
+					((IRCLIB *)handle)->callbacks[IRCLIB_MODE] (handle, nick, host, tok[2], plus, C_MODE_OP, tok[4+argnum]);
+
+				argnum++;
+			}
+		}
 	} else if(strncmp(tok[1], "QUIT", 4) == 0) {
 		char *msgptr;
 
