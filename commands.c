@@ -71,3 +71,17 @@ irclib_quit(void *handle, char *quitmsg)
 	send_cmdpkt(handle, pkt);
 	pkt_free(pkt);
 }
+
+/* PROTO */
+void
+irclib_whois(void *handle, char *nick)
+{
+	pkt_t *pkt;
+
+	pkt = pkt_init(6+strlen(nick));
+	pkt_addstr(pkt, "WHOIS ");
+	pkt_addstr(pkt, nick);
+
+	send_cmdpkt(handle, pkt);
+	pkt_free(pkt);
+}

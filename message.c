@@ -163,6 +163,28 @@ parse_numeric(void *handle, char *message, split_t *tokens, int numeric)
 	size_t x;
 
 	switch (numeric) {
+	case 311:
+		datastart = (unsigned char *) strchr((char *) message + 1, ':');
+		if(((IRCLIB *)handle)->callbacks[IRCLIB_WHOIS_USERHOST] != NULL)
+			((IRCLIB *)handle)->callbacks[IRCLIB_WHOIS_USERHOST] (handle, tok[3], tok[4], tok[5], datastart+1);
+		break;
+	case 312:
+		datastart = (unsigned char *) strchr((char *) message + 1, ':');
+		if(((IRCLIB *)handle)->callbacks[IRCLIB_WHOIS_SERVER] != NULL)
+			((IRCLIB *)handle)->callbacks[IRCLIB_WHOIS_SERVER] (handle, tok[3], tok[4], datastart+1);
+		break;
+	case 319:
+		datastart = (unsigned char *) strchr((char *) message + 1, ':');
+		if(((IRCLIB *)handle)->callbacks[IRCLIB_WHOIS_CHANNELS] != NULL)
+			((IRCLIB *)handle)->callbacks[IRCLIB_WHOIS_CHANNELS] (handle, tok[3], datastart+1);
+		break;
+	case 332:
+		datastart = (unsigned char *) strchr((char *) message + 1, ':');
+
+		if(((IRCLIB *)handle)->callbacks[IRCLIB_TOPIC] != NULL && datastart != NULL)
+			((IRCLIB *)handle)->callbacks[IRCLIB_TOPIC] (handle, tok[3], datastart+1);
+
+		break;
 	case 353:
 		chan = tok[4];
 		for(x = 5; x < (tokens->num-1); x++) {
