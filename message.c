@@ -31,6 +31,13 @@ parse_message(void *handle, char *message)
 		pkt_addstr(pingpkt, tok[1]);
 		send_cmdpkt(handle, pingpkt);
 		pkt_free(pingpkt);
+	} else if(strncmp(tok[0], "NOTICE", 6) == 0) {
+		if(strncmp(tok[1], "AUTH", 4) == 0) {
+			char *msgptr;
+			msgptr = strchr(message, ':');
+			if(((IRCLIB *)handle)->callbacks[IRCLIB_NOTICE_AUTH] != NULL)
+				((IRCLIB *)handle)->callbacks[IRCLIB_NOTICE_AUTH](handle, msgptr+1);
+		}
 	} else if(message[0] == ':') {
 		numeric = strtol(tok[1], (char **)NULL, 10);
 		if(numeric == 0)
