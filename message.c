@@ -38,6 +38,8 @@ parse_message(void *handle, char *message)
 		else
 			parse_numeric(handle, message, tokens, numeric);
 	}
+
+	i_free(tokens);
 }
 
 /* PROTO */
@@ -61,30 +63,40 @@ parse_command(void *handle, char *message, split_t *tokens)
 		char *chan;
 
 		if(tok[2][0] == ':')
-			chan = tok[2]+1;
+			chan = tolower_str(tok[2]+1);
 		else
-			chan = tok[2];
+			chan = tolower_str(tok[2]);
 
 		if (((IRCLIB *) handle)->callbacks[IRCLIB_JOIN] != NULL)
 			((IRCLIB *) handle)->callbacks[IRCLIB_JOIN] (handle, nick, host, chan);
+		free(chan);
 	} else if (strncmp(tok[1], "PART", 4) == 0) {
 		char *chan;
 
 		if(tok[2][0] == ':')
-			chan = tok[2]+1;
+			chan = tolower_str(tok[2]+1);
 		else
-			chan = tok[2];
+			chan = tolower_str(tok[2]);
 
 		if (((IRCLIB *) handle)->callbacks[IRCLIB_PART] != NULL)
 			((IRCLIB *) handle)->callbacks[IRCLIB_PART] (handle, nick, host, chan);
+		free(chan);
 	} else if (strncmp(tok[1], "PRIVMSG", 7) == 0) {
 		char *msgptr;
+		char *target;
 
 		msgptr = strchr(message, ' ');
 		msgptr = strchr(msgptr+1, ':');
 
+		if(tok[2][0] == '#')
+			target = tolower_str(tok[2]);
+		else
+			target = strdup(tok[2]);
+
 		if(((IRCLIB *) handle)->callbacks[IRCLIB_PRIVMSG] != NULL)
-			((IRCLIB *)handle)->callbacks[IRCLIB_PRIVMSG] (handle, nick, host, tok[2], msgptr+1);
+			((IRCLIB *)handle)->callbacks[IRCLIB_PRIVMSG] (handle, nick, host, target, msgptr+1);
+
+		free(target);
 	}
 
 	if (nick != NULL)

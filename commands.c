@@ -29,6 +29,21 @@ irclib_join(void *handle, char *channel)
 
 /* PROTO */
 void
+irclib_part(void *handle, char *channel)
+{
+	pkt_t *pkt;
+
+	pkt = pkt_init(5 + strlen(channel));
+
+	pkt_addstr(pkt, "PART ");
+	pkt_addstr(pkt, channel);
+
+	send_cmdpkt(handle, pkt);
+	pkt_free(pkt);
+}
+
+/* PROTO */
+void
 irclib_privmsg(void *handle, char *target, char *message)
 {
 	pkt_t *pkt;
@@ -39,6 +54,20 @@ irclib_privmsg(void *handle, char *target, char *message)
 	pkt_addstr(pkt, " :");
 	pkt_addstr(pkt, message);
 	
+	send_cmdpkt(handle, pkt);
+	pkt_free(pkt);
+}
+
+/* PROTO */
+void
+irclib_quit(void *handle, char *quitmsg)
+{
+	pkt_t *pkt;
+
+	pkt = pkt_init(6+strlen(quitmsg));
+	pkt_addstr(pkt, "QUIT :");
+	pkt_addstr(pkt, quitmsg);
+
 	send_cmdpkt(handle, pkt);
 	pkt_free(pkt);
 }

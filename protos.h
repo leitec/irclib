@@ -1,5 +1,7 @@
 void irclib_join (void *handle, char *channel);
+void irclib_part (void *handle, char *channel);
 void irclib_privmsg (void *handle, char *target, char *message);
+void irclib_quit (void *handle, char *quitmsg);
 void           * irclib_create_handle (void);
 void irclib_register_callback (void *handle, int event, void (*ptr) (void *,...));
 int irclib_connected (void *handle);
@@ -9,6 +11,7 @@ void parse_message (void *handle, char *message);
 void parse_command (void *handle, char *message, split_t *tokens);
 void parse_numeric (void *handle, char *message, split_t *tokens, int numeric);
 int getbyteorder (void);
+char * tolower_str (const char *orig);
 pkt_t          * pkt_init (size_t len);
 void pkt_zero (pkt_t * pkt);
 void pkt_free (pkt_t * pkt);

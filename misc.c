@@ -26,3 +26,19 @@ getbyteorder(void)
 	else
 		return HOST_LITTLE_ENDIAN;
 }
+
+/* PROTO */
+char *
+tolower_str(const char *orig)
+{
+	char *ns;
+	int len = strlen(orig);
+	size_t x;
+
+	ns = malloc(len+1);
+	for(x = 0; x < len; x++)
+		ns[x] = tolower(orig[x]);
+
+	ns[len] = 0;
+	return ns;
+}
