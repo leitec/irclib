@@ -47,6 +47,13 @@ irclib_create_handle(void)
 }
 
 /* PROTO */
+void
+irclib_register_callback(void *handle, int event, void (*ptr) (void *,...))
+{
+	((IRCLIB *)handle)->callbacks[event] = ptr;
+}
+
+/* PROTO */
 int
 irclib_connected(void *handle)
 {

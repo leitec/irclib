@@ -1,10 +1,12 @@
+void irclib_join (void *handle, char *channel);
 void * irclib_create_handle (void);
+void irclib_register_callback (void *handle, int event, void (*ptr) (void *,...));
 int irclib_connected (void *handle);
 IRCLIB_RET irclib_setnick (void *handle, char *nickname);
 IRCLIB_RET irclib_select (int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, struct timeval *timeout);
 void parse_message (void *handle, unsigned char *message);
 void parse_command (void *handle, unsigned char *message, unsigned char *from, unsigned char *msgcode);
-void parse_numeric (void *handle, unsigned char *message, int numeric) ;
+void parse_numeric (void *handle, unsigned char *message, int numeric);
 int getbyteorder (void);
 pkt_t          * pkt_init (size_t len);
 void pkt_zero (pkt_t * pkt);

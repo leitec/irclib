@@ -56,7 +56,28 @@ parse_message(void *handle, unsigned char *message)
 void
 parse_command(void *handle, unsigned char *message, unsigned char *from, unsigned char *msgcode)
 {
-	printf("%s\n", (char *) message);
+	char *nick = NULL, *host = NULL, *datastart;
+	size_t len;
+
+	if(strchr((char *)from, '!') != NULL) {
+		len = chrdist((char *)from, '!');
+		nick = malloc(len+1);
+		memcpy(nick, from, len);
+		nick[len] = 0;
+		host = strchr((char *)from, '!');
+		host++;
+	}
+
+	if(strcmp((char *)msgcode, "JOIN") == 0) {
+		datastart = strchr(message+1, ':');
+		if(((IRCLIB *)handle)->callbacks[IRCLIB_JOIN] != NULL)
+			((IRCLIB *)handle)->callbacks[IRCLIB_JOIN](handle, nick, host, datastart+1);
+	} else {
+		printf("%s\n", message);
+		}
+
+	if(nick != NULL)
+		free(nick);
 }
 
 /* PROTO */
@@ -87,13 +108,22 @@ parse_numeric(void *handle, unsigned char *message, int numeric)
 	case 001:
 	case 002:
 	case 003:
-	case 372:
-	case 375:
-		datastart = (unsigned char *) strchr((char *) message + 1, ':');
-		printf("** %s\n", datastart + 1);
-		break;
 	case 004:
 	case 005:
+		break;
+	case 372:
+	case 375:
+	case 376:
+	case 422:
+		datastart = (unsigned char *) strchr((char *) message + 1, ':');
+
+		if(((IRCLIB *)handle)->callbacks[IRCLIB_MOTD] != NULL)
+			((IRCLIB *)handle)->callbacks[IRCLIB_MOTD](handle, datastart+1);
+
+		if(numeric == 422 || numeric == 376) {
+			if(((IRCLIB *)handle)->callbacks[IRCLIB_READY] != NULL) 
+				((IRCLIB *)handle)->callbacks[IRCLIB_READY](handle);
+		}
 		break;
 	default:
 		printf("%s\n", (char *) message);

@@ -17,7 +17,7 @@ CFLAGS=-O2 -Wall -pedantic -pipe
 LIBS=-lirc
 #LIBS+=-lwatt -L/usr/local/djgpp/watt/lib
 LDFLAGS=-L.
-OBJECTS=socket.o packet.o irclib.o misc.o message.o
+OBJECTS=socket.o packet.o irclib.o misc.o message.o commands.o
 
 $(EXEC):$(OBJECTS) test.o
 	$(AR) rcv $(LIB) $(OBJECTS)

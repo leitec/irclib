@@ -1,5 +1,21 @@
 #include "irclib.h"
 
+void irc_motd(void *handle, char *motd)
+{
+	printf("** %s\n", motd);
+}
+
+void irc_ready(void *handle)
+{
+	printf("** Ready.\n");
+	irclib_join(handle, "#irclib");
+}
+
+void irc_join(void *handle, char *nick, char *host, char *channel)
+{
+	printf("** %s [%s] has joined %s.\n", nick, host, channel);
+}
+
 int main(void)
 {
 	void *handle;
@@ -9,6 +25,9 @@ int main(void)
 	handle = irclib_create_handle();
 	irclib_setnick(handle, "IRClib");
 	irclib_connect(handle, "irc.pfzt.net", 6667);
+	irclib_register_callback(handle, IRCLIB_MOTD, irc_motd);
+	irclib_register_callback(handle, IRCLIB_READY, irc_ready);
+	irclib_register_callback(handle, IRCLIB_JOIN, irc_join);
 
 	while(!irclib_connected(handle));
 
