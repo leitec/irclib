@@ -120,12 +120,6 @@ parse_numeric(void *handle, char *message, split_t *tokens, int numeric)
 	size_t x;
 
 	switch (numeric) {
-	case 001:
-	case 002:
-	case 003:
-	case 004:
-	case 005:
-		break;
 	case 353:
 		chan = tok[4];
 		for(x = 5; x < (tokens->num-1); x++) {
@@ -155,6 +149,10 @@ parse_numeric(void *handle, char *message, split_t *tokens, int numeric)
 			if (((IRCLIB *) handle)->callbacks[IRCLIB_READY] != NULL)
 				((IRCLIB *) handle)->callbacks[IRCLIB_READY] (handle);
 		}
+		break;
+	case 433:
+		if(((IRCLIB *)handle)->callbacks[IRCLIB_NICKINUSE] != NULL)
+			((IRCLIB *)handle)->callbacks[IRCLIB_NICKINUSE] (handle, tok[3]);
 		break;
 	default:
 		break;
