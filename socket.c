@@ -22,6 +22,13 @@
 ssize_t
 socksend(void *handle, unsigned char *data, size_t len)
 {
+	unsigned char *data2;
+
+	data2 = malloc(len+1);
+	memcpy(data2, data, len);
+	data2[len+1] = 0;
+	printf("Sent: %s", data2);
+
 	return send(((IRCLIB *) handle)->sock, data, len, 0);
 }
 

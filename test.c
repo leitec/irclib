@@ -40,7 +40,7 @@ main(void)
 
 	handle = irclib_create_handle();
 	irclib_setnick(handle, "IRClib");
-	irclib_connect(handle, "irc.pfzt.net", 6667);
+	irclib_connect(handle, "sterling.va.us.undernet.org", 6667);
 	irclib_register_callback(handle, IRCLIB_MOTD, (void (*) (void *,...)) irc_motd);
 	irclib_register_callback(handle, IRCLIB_READY, (void (*) (void *,...)) irc_ready);
 	irclib_register_callback(handle, IRCLIB_JOIN, (void (*) (void *,...)) irc_join);

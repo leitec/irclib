@@ -19,13 +19,9 @@ void
 parse_message(void *handle, char *message)
 {
 	split_t		*tokens;
-	size_t x;
+	int		numeric;
 
 	tokens = i_split(message);
-	for(x = 0; x < tokens->num; x++)
-		printf("[%s] ", tok[x]);
-
-	printf("\n");
 
 	if(strncmp(tok[0], "PING", 4) == 0) {
 		pkt_t *pingpkt;
@@ -35,14 +31,21 @@ parse_message(void *handle, char *message)
 		pkt_addstr(pingpkt, tok[1]);
 		send_cmdpkt(handle, pingpkt);
 		pkt_free(pingpkt);
+	} else {
+		numeric = strtol(tok[1], (char **)NULL, 10);
+		if(numeric == 0)
+			parse_command(handle, message, tokens);
+		else
+			parse_numeric(handle, message, tokens, numeric);
 	}
 }
 
 /* PROTO */
 void
-parse_command(void *handle, unsigned char *message, unsigned char *from, unsigned char *msgcode)
+parse_command(void *handle, char *message, split_t *tokens)
 {
 	char           *nick = NULL, *host = NULL, *datastart;
+	char		*from = tok[0] + 1;
 	size_t          len;
 
 	if (strchr((char *) from, '!') != NULL) {
@@ -53,11 +56,12 @@ parse_command(void *handle, unsigned char *message, unsigned char *from, unsigne
 		host = strchr((char *) from, '!');
 		host++;
 	}
-	if (strcmp((char *) msgcode, "JOIN") == 0) {
+
+	if (strncmp(tok[1], "JOIN", 4) == 0) {
 		datastart = strchr((char *) message + 1, ':');
 		if (((IRCLIB *) handle)->callbacks[IRCLIB_JOIN] != NULL)
 			((IRCLIB *) handle)->callbacks[IRCLIB_JOIN] (handle, nick, host, datastart + 1);
-	} else if (strcmp((char *) message, "PRIVMSG") == 0) {
+	} else if (strncmp(tok[1], "PRIVMSG", 7) == 0) {
 		char           *destptr;
 
 		destptr = strchr((char *) message, ' ');
@@ -68,33 +72,17 @@ parse_command(void *handle, unsigned char *message, unsigned char *from, unsigne
 		}
 		printf("%s\n", (char *) message);
 	}
+
 	if (nick != NULL)
 		free(nick);
 }
 
 /* PROTO */
 void
-parse_numeric(void *handle, unsigned char *message, int numeric)
+parse_numeric(void *handle, char *message, split_t *tokens, int numeric)
 {
-	unsigned char  *name = NULL, *datastart;
-	char           *ptr1;
-	size_t          dst;
+	unsigned char *datastart;
 
-	/*
-	 * Ugly but works.
-	 *
-	 * Get the target/object name :server XXX <name>
-	 */
-
-	ptr1 = strchr((char *) message, ' ');
-	if (ptr1 != NULL) {
-		ptr1 = strchr(ptr1 + 1, ' ');
-		if (ptr1 != NULL) {
-			dst = chrdist(ptr1 + 1, ' ');
-			name = malloc(dst + 1);
-			memcpy(name, ptr1 + 1, dst);
-		}
-	}
 	switch (numeric) {
 	case 001:
 	case 002:
@@ -117,6 +105,6 @@ parse_numeric(void *handle, unsigned char *message, int numeric)
 		}
 		break;
 	default:
-		printf("%s\n", (char *) message);
+		printf("!! %s\n", (char *) message);
 	}
 }
