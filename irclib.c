@@ -1,15 +1,27 @@
+/**  _        _ _ _
+ ** (_)_ _ __| (_) |__
+ ** | | '_/ _| | | '_ \
+ ** |_|_| \__|_|_|_.__/
+ **
+ ** A simple library for creating IRC clients.
+ **
+ ** (C) 2005 by Claudio Leite
+ **
+ ** Please see the COPYING file for more details.
+ **/
+
 #include "irclib.h"
 
-int endianness;
+int             endianness;
 IRCLIB_HANDLES *handles = 0;
 
 /* PROTO */
-void *
+void           *
 irclib_create_handle(void)
 {
-	IRCLIB *h;
+	IRCLIB         *h;
 	IRCLIB_HANDLES *tmp;
-	int xx;
+	int             xx;
 
 	endianness = getbyteorder();
 
@@ -25,54 +37,54 @@ irclib_create_handle(void)
 	h->buffered = 0;
 	h->waiting_len = 0;
 
-	for(xx = 0; xx < NUM_CALLBACKS; xx++)
+	for (xx = 0; xx < NUM_CALLBACKS; xx++)
 		h->callbacks[xx] = NULL;
 
-	if(handles == NULL) {
+	if (handles == NULL) {
 		handles = malloc(sizeof(IRCLIB_HANDLES));
 		handles->handle = h;
 		handles->next = NULL;
 	} else {
-		for(tmp = handles; tmp->next != NULL; tmp = tmp->next);
+		for (tmp = handles; tmp->next != NULL; tmp = tmp->next);
 
 		tmp->next = malloc(sizeof(IRCLIB_HANDLES));
 		tmp->next->next = NULL;
 		tmp->next->handle = h;
 	}
 
-	irclib_setnick((void *)h, "NoName");
+	irclib_setnick((void *) h, "NoName");
 	h->realname = strdup("IRClib User");
 
-	return (void *)h;
+	return (void *) h;
 }
 
 /* PROTO */
 void
 irclib_register_callback(void *handle, int event, void (*ptr) (void *,...))
 {
-	((IRCLIB *)handle)->callbacks[event] = ptr;
+	((IRCLIB *) handle)->callbacks[event] = ptr;
 }
 
 /* PROTO */
 int
 irclib_connected(void *handle)
 {
-	return ((IRCLIB *)handle)->connected;
+	return ((IRCLIB *) handle)->connected;
 }
 
 /* PROTO */
 IRCLIB_RET
 irclib_setnick(void *handle, char *nickname)
 {
-	pkt_t *nickpkt;
+	pkt_t          *nickpkt;
 
-	if(((IRCLIB *)handle)->nickname != NULL)
-			free(((IRCLIB *)handle)->nickname);
+	if (((IRCLIB *) handle)->nickname != NULL)
+		free(((IRCLIB *) handle)->nickname);
 
-	((IRCLIB *)handle)->nickname = strdup(nickname);
+	((IRCLIB *) handle)->nickname = strdup(nickname);
 
-	if(((IRCLIB *)handle)->connected == 1) {
-		nickpkt = pkt_init(7+strlen(nickname));
+	if (((IRCLIB *) handle)->connected == 1) {
+		nickpkt = pkt_init(7 + strlen(nickname));
 		pkt_addstr(nickpkt, "NICK ");
 		pkt_addstr(nickpkt, nickname);
 		pkt_addstr(nickpkt, "\r\n");
@@ -80,40 +92,39 @@ irclib_setnick(void *handle, char *nickname)
 		sendPkt(handle, nickpkt);
 		pkt_free(nickpkt);
 	}
-
 	return IRCLIB_RET_OK;
 }
 
 /* PROTO */
 IRCLIB_RET
-irclib_select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, struct timeval *timeout)
+irclib_select(int nfds, fd_set * readfds, fd_set * writefds, fd_set * exceptfds, struct timeval * timeout)
 {
 	IRCLIB_HANDLES *tmp;
-	IRCLIB_RET ret = IRCLIB_RET_OK;
+	IRCLIB_RET      ret = IRCLIB_RET_OK;
 
-	size_t bytesread, bytesparsed;
-	size_t nextcr;
-	int maxfd = nfds;
-	unsigned char recvbuf[513];
-	unsigned char *bufptr, *messagestr;
+	size_t          bytesread, bytesparsed;
+	size_t          nextcr;
+	int             maxfd = nfds;
+	unsigned char   recvbuf[513];
+	unsigned char  *bufptr, *messagestr;
 
-	for(tmp = handles; tmp != NULL; tmp = tmp->next) {
-		if((int)tmp->handle->sock > maxfd)
-			maxfd = (int)tmp->handle->sock;
-		if(tmp->handle->sock != -1)
+	for (tmp = handles; tmp != NULL; tmp = tmp->next) {
+		if ((int) tmp->handle->sock > maxfd)
+			maxfd = (int) tmp->handle->sock;
+		if (tmp->handle->sock != -1)
 			FD_SET(tmp->handle->sock, readfds);
 	}
 
-	if(select(maxfd+1, readfds, writefds, exceptfds, timeout) == -1)
+	if (select(maxfd + 1, readfds, writefds, exceptfds, timeout) == -1)
 		return IRCLIB_RET_ERROR;
 
-	for(tmp = handles; tmp; tmp = tmp->next) {
-		if(tmp->handle->sock == -1)
+	for (tmp = handles; tmp; tmp = tmp->next) {
+		if (tmp->handle->sock == -1)
 			continue;
 
-		if(FD_ISSET(tmp->handle->sock, readfds)) {
+		if (FD_ISSET(tmp->handle->sock, readfds)) {
 			bytesread = recv(tmp->handle->sock, recvbuf, 512, 0);
-			if(bytesread <= 0) {
+			if (bytesread <= 0) {
 				shutdown(tmp->handle->sock, 0x02);
 				tmp->handle->sock = -1;
 				tmp->handle->connected = 0;
@@ -122,15 +133,14 @@ irclib_select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, st
 
 				return IRCLIB_RET_ERROR;
 			}
-
 			recvbuf[bytesread] = 0;
 			bytesparsed = 0;
 
-			if(tmp->handle->waiting_len > 0) {
-				tmp->handle->data_len = tmp->handle->waiting_len+bytesread;
-				tmp->handle->data = malloc(tmp->handle->data_len+1);
+			if (tmp->handle->waiting_len > 0) {
+				tmp->handle->data_len = tmp->handle->waiting_len + bytesread;
+				tmp->handle->data = malloc(tmp->handle->data_len + 1);
 				memcpy(tmp->handle->data, tmp->handle->buffered, tmp->handle->waiting_len);
-				memcpy(tmp->handle->data+tmp->handle->waiting_len, recvbuf, bytesread);
+				memcpy(tmp->handle->data + tmp->handle->waiting_len, recvbuf, bytesread);
 				tmp->handle->data[tmp->handle->data_len] = 0;
 				free(tmp->handle->buffered);
 				tmp->handle->buffered = 0;
@@ -138,25 +148,23 @@ irclib_select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, st
 
 			} else {
 				tmp->handle->data_len = bytesread;
-				tmp->handle->data = malloc(bytesread+1);
+				tmp->handle->data = malloc(bytesread + 1);
 				memcpy(tmp->handle->data, recvbuf, bytesread);
 				tmp->handle->data[tmp->handle->data_len] = 0;
 			}
 
 			bufptr = tmp->handle->data;
 
-			while(bytesparsed < tmp->handle->data_len) {
-				nextcr = chrdist((char *)bufptr, '\r');
-				if(nextcr == 0)
-				{
-					tmp->handle->buffered = malloc(tmp->handle->data_len-bytesparsed+1);
-					tmp->handle->waiting_len = tmp->handle->data_len-bytesparsed;
-					memcpy(tmp->handle->buffered, bufptr, tmp->handle->data_len-bytesparsed);
+			while (bytesparsed < tmp->handle->data_len) {
+				nextcr = chrdist((char *) bufptr, '\r');
+				if (nextcr == 0) {
+					tmp->handle->buffered = malloc(tmp->handle->data_len - bytesparsed + 1);
+					tmp->handle->waiting_len = tmp->handle->data_len - bytesparsed;
+					memcpy(tmp->handle->buffered, bufptr, tmp->handle->data_len - bytesparsed);
 					tmp->handle->buffered[tmp->handle->waiting_len] = 0;
 					break;
 				}
-				
-				messagestr = malloc(nextcr+1);
+				messagestr = malloc(nextcr + 1);
 				memcpy(messagestr, bufptr, nextcr);
 				messagestr[nextcr] = 0;
 

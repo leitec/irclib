@@ -1,3 +1,15 @@
+/**  _        _ _ _
+ ** (_)_ _ __| (_) |__
+ ** | | '_/ _| | | '_ \
+ ** |_|_| \__|_|_|_.__/
+ **
+ ** A simple library for creating IRC clients.
+ **
+ ** (C) 2005 by Claudio Leite
+ **
+ ** Please see the COPYING file for more details.
+ **/
+
 #include "irclib.h"
 
 /*
@@ -24,11 +36,11 @@ sendPkt(void *handle, pkt_t * packet)
 size_t
 chrdist(char *str, char ch)
 {
-	size_t x;
-	size_t len = strlen(str);
+	size_t          x;
+	size_t          len = strlen(str);
 
-	for(x = 0; x < len; x++)  {
-		if(str[x] == ch)
+	for (x = 0; x < len; x++) {
+		if (str[x] == ch)
 			return x;
 	}
 

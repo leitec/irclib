@@ -1,3 +1,15 @@
+/**  _        _ _ _
+ ** (_)_ _ __| (_) |__
+ ** | | '_/ _| | | '_ \
+ ** |_|_| \__|_|_|_.__/
+ **
+ ** A simple library for creating IRC clients.
+ **
+ ** (C) 2005 by Claudio Leite
+ **
+ ** Please see the COPYING file for more details.
+ **/
+
 #include "irclib.h"
 
 /* PROTO */
@@ -40,7 +52,8 @@ parse_message(void *handle, unsigned char *message)
 				pong = pkt_init(len + 3);
 				pkt_addstr(pong, "PONG ");
 				pkt_addraw(pong, message + 5, len - 5);
-				pkt_addstr(pong, "\r\n");
+				pkt_addstr(pong, "\r\n\0");
+				printf("%s\n", pong->data);
 
 				sendPkt(handle, pong);
 				pkt_free(pong);
@@ -56,27 +69,33 @@ parse_message(void *handle, unsigned char *message)
 void
 parse_command(void *handle, unsigned char *message, unsigned char *from, unsigned char *msgcode)
 {
-	char *nick = NULL, *host = NULL, *datastart;
-	size_t len;
+	char           *nick = NULL, *host = NULL, *datastart;
+	size_t          len;
 
-	if(strchr((char *)from, '!') != NULL) {
-		len = chrdist((char *)from, '!');
-		nick = malloc(len+1);
+	if (strchr((char *) from, '!') != NULL) {
+		len = chrdist((char *) from, '!');
+		nick = malloc(len + 1);
 		memcpy(nick, from, len);
 		nick[len] = 0;
-		host = strchr((char *)from, '!');
+		host = strchr((char *) from, '!');
 		host++;
 	}
+	if (strcmp((char *) msgcode, "JOIN") == 0) {
+		datastart = strchr((char *) message + 1, ':');
+		if (((IRCLIB *) handle)->callbacks[IRCLIB_JOIN] != NULL)
+			((IRCLIB *) handle)->callbacks[IRCLIB_JOIN] (handle, nick, host, datastart + 1);
+	} else if (strcmp((char *) message, "PRIVMSG") == 0) {
+		char           *destptr;
 
-	if(strcmp((char *)msgcode, "JOIN") == 0) {
-		datastart = strchr(message+1, ':');
-		if(((IRCLIB *)handle)->callbacks[IRCLIB_JOIN] != NULL)
-			((IRCLIB *)handle)->callbacks[IRCLIB_JOIN](handle, nick, host, datastart+1);
-	} else {
-		printf("%s\n", message);
+		destptr = strchr((char *) message, ' ');
+		if (destptr != NULL) {
+			destptr = strchr(destptr + 1, ' ');
+
+
 		}
-
-	if(nick != NULL)
+		printf("%s\n", (char *) message);
+	}
+	if (nick != NULL)
 		free(nick);
 }
 
@@ -90,7 +109,7 @@ parse_numeric(void *handle, unsigned char *message, int numeric)
 
 	/*
 	 * Ugly but works.
-	 * 
+	 *
 	 * Get the target/object name :server XXX <name>
 	 */
 
@@ -103,7 +122,6 @@ parse_numeric(void *handle, unsigned char *message, int numeric)
 			memcpy(name, ptr1 + 1, dst);
 		}
 	}
-
 	switch (numeric) {
 	case 001:
 	case 002:
@@ -117,12 +135,12 @@ parse_numeric(void *handle, unsigned char *message, int numeric)
 	case 422:
 		datastart = (unsigned char *) strchr((char *) message + 1, ':');
 
-		if(((IRCLIB *)handle)->callbacks[IRCLIB_MOTD] != NULL)
-			((IRCLIB *)handle)->callbacks[IRCLIB_MOTD](handle, datastart+1);
+		if (((IRCLIB *) handle)->callbacks[IRCLIB_MOTD] != NULL)
+			((IRCLIB *) handle)->callbacks[IRCLIB_MOTD] (handle, datastart + 1);
 
-		if(numeric == 422 || numeric == 376) {
-			if(((IRCLIB *)handle)->callbacks[IRCLIB_READY] != NULL) 
-				((IRCLIB *)handle)->callbacks[IRCLIB_READY](handle);
+		if (numeric == 422 || numeric == 376) {
+			if (((IRCLIB *) handle)->callbacks[IRCLIB_READY] != NULL)
+				((IRCLIB *) handle)->callbacks[IRCLIB_READY] (handle);
 		}
 		break;
 	default:

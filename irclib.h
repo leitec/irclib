@@ -1,3 +1,15 @@
+/**  _        _ _ _
+ ** (_)_ _ __| (_) |__
+ ** | | '_/ _| | | '_ \
+ ** |_|_| \__|_|_|_.__/
+ **
+ ** A simple library for creating IRC clients.
+ **
+ ** (C) 2005 by Claudio Leite
+ **
+ ** Please see the COPYING file for more details.
+ **/
+
 /**
  ** irclib - Unimaginatively titled IRC library
  **
@@ -79,6 +91,11 @@ enum {
 	IRCLIB_STATUS_CONNECTED
 };
 
+typedef struct Split {
+	size_t          num;
+	uint8_t       **data;
+}               split_t;
+
 typedef struct IRCLib {
 #ifdef MACINTOSH_CLASSIC
 	StreamPtr       s;
@@ -91,13 +108,13 @@ typedef struct IRCLib {
 	int             sock;
 #endif
 	unsigned char  *data;
-	size_t		data_len;
+	size_t          data_len;
 	int             connected;
 	void            (*callbacks[NUM_CALLBACKS]) (void *,...);
-	char		*nickname;
-	char		*realname;
-	unsigned char	*buffered;
-	size_t		waiting_len;
+	char           *nickname;
+	char           *realname;
+	unsigned char  *buffered;
+	size_t          waiting_len;
 	int             isidle;
 	int             isaway;
 }

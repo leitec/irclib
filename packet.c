@@ -1,3 +1,15 @@
+/**  _        _ _ _
+ ** (_)_ _ __| (_) |__
+ ** | | '_/ _| | | '_ \
+ ** |_|_| \__|_|_|_.__/
+ **
+ ** A simple library for creating IRC clients.
+ **
+ ** (C) 2005 by Claudio Leite
+ **
+ ** Please see the COPYING file for more details.
+ **/
+
 /*
  * packet.c
  *
@@ -190,11 +202,11 @@ pkt_addraw(pkt_t * pkt, uint8_t * data, size_t len)
 
 /* PROTO */
 IRCLIB_RET
-pkt_addstr(pkt_t *pkt, char *data)
+pkt_addstr(pkt_t * pkt, char *data)
 {
-	size_t len = strlen(data);
+	size_t          len = strlen(data);
 
-	if(pkt_empty(pkt) < len)
+	if (pkt_empty(pkt) < len)
 		return IRCLIB_RET_ERROR;
 
 	memcpy(pkt->data + pkt->offset, data, len);
