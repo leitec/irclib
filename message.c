@@ -110,6 +110,12 @@ parse_command(void *handle, char *message, split_t *tokens)
 		free(target);
 	} else if(strncmp(tok[1], "MODE", 4) == 0) {
 		int plus = 1;
+		char *fromptr;
+
+		if(nick == NULL)
+			fromptr = from;
+		else
+			fromptr = nick;
 
 		if(tok[3][0] == ':')
 			pos = 1;
@@ -129,7 +135,7 @@ parse_command(void *handle, char *message, split_t *tokens)
 
 			if(tok[3][pos] == 'o') {
 				if(((IRCLIB *)handle)->callbacks[IRCLIB_MODE] != NULL)
-					((IRCLIB *)handle)->callbacks[IRCLIB_MODE] (handle, nick, host, tok[2], plus, C_MODE_OP, tok[4+argnum]);
+					((IRCLIB *)handle)->callbacks[IRCLIB_MODE] (handle, fromptr, host, tok[2], plus, C_MODE_OP, tok[4+argnum]);
 
 				argnum++;
 			}
