@@ -179,6 +179,10 @@ parse_numeric(void *handle, char *message, split_t *tokens, int numeric)
 	size_t x;
 
 	switch (numeric) {
+	case 001:
+		if(((IRCLIB *)handle)->callbacks[IRCLIB_SERVER_NAME] != NULL)
+			((IRCLIB *)handle)->callbacks[IRCLIB_SERVER_NAME] (handle, tok[0]+1);
+		break;
 	case 311:
 		datastart = (unsigned char *) strchr((char *) message + 1, ':');
 		if(((IRCLIB *)handle)->callbacks[IRCLIB_WHOIS_USERHOST] != NULL)
