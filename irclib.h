@@ -66,7 +66,7 @@ typedef int     IRCLIB_RET;
 #define IRCLIB_RET_ERROR -1
 #define IRCLIB_RET_OK 1
 
-#define NUM_CALLBACKS 19
+#define NUM_CALLBACKS 20
 enum {
 	IRCLIB_MOTD,
 	IRCLIB_READY,

@@ -82,10 +82,26 @@ parse_command(void *handle, char *message, split_t *tokens)
 		if (((IRCLIB *) handle)->callbacks[IRCLIB_PART] != NULL)
 			((IRCLIB *) handle)->callbacks[IRCLIB_PART] (handle, nick, host, chan);
 		free(chan);
+	} else if (strncmp(tok[1], "NOTICE", 6) == 0) {
+		char *msgptr;
+		
+		/*
+		 * see note on privmsg below
+		 */
+		msgptr = strchr(message, ' ');
+		msgptr = strchr(msgptr+1, ':');
+
+		if(((IRCLIB *) handle)->callbacks[IRCLIB_NOTICE] != NULL)
+			((IRCLIB *)handle)->callbacks[IRCLIB_NOTICE] (handle, nick, host, msgptr+1);
 	} else if (strncmp(tok[1], "PRIVMSG", 7) == 0) {
 		char *msgptr;
 		char *target;
 
+		/*
+		 * we have to do this, otherwise
+		 * people with non-resolving IPv6 addresses
+		 * screw us up.
+		 */
 		msgptr = strchr(message, ' ');
 		msgptr = strchr(msgptr+1, ':');
 
