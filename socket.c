@@ -10,7 +10,6 @@
 ssize_t
 socksend(void *handle, unsigned char *data, size_t len)
 {
-	printf("OUTGOING: %s", data);
 	return send(((IRCLIB *) handle)->sock, data, len, 0);
 }
 

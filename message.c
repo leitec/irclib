@@ -57,7 +57,7 @@ parse_message(void *handle, unsigned char *message)
 void
 parse_command(void *handle, unsigned char *message, unsigned char *from, unsigned char *msgcode)
 {
-	printf("%s\n", message);
+	printf("%s\n", (char *)message);
 }
 
 /* PROTO */
@@ -88,12 +88,16 @@ parse_numeric(void *handle, unsigned char *message, int numeric)
 	switch(numeric) {
 	case 001:
 	case 002:
+	case 003:
 	case 372:
-	case 376:
+	case 375:
 		datastart = (unsigned char *)strchr((char *)message+1, ':');
 		printf("** %s\n", datastart+1);
 		break;
+	case 004:
+	case 005:
+		break;
 	default:
-		printf("%s\n", message);
+		printf("%s\n", (char *)message);
 	}
 }
