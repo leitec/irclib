@@ -8,7 +8,7 @@ int main(void)
 
 	handle = irclib_create_handle();
 	irclib_setnick(handle, "IRClib");
-	irclib_connect(handle, "irc.pfzt.net", 6667);
+	irclib_connect(handle, "irc.eskimo.com", 6667);
 
 	while(!irclib_connected(handle));
 
