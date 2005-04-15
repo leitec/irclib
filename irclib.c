@@ -150,7 +150,8 @@ irclib_select(int nfds, fd_set * readfds, fd_set * writefds, fd_set * exceptfds,
 				tmp->handle->sock = -1;
 				tmp->handle->connected = 0;
 
-				/* XXX add disconnected callback */
+				if(tmp->handle->callbacks[IRCLIB_ERROR])
+					tmp->handle->callbacks[IRCLIB_ERROR](tmp->handle, IRCLIB_ERROR_DISCONNECTED);
 
 				return IRCLIB_RET_ERROR;
 			}

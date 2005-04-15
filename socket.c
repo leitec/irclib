@@ -22,7 +22,19 @@
 ssize_t
 socksend(void *handle, unsigned char *data, size_t len)
 {
-	return send(((IRCLIB *) handle)->sock, data, len, 0);
+	ssize_t ret;
+
+	ret =  send(((IRCLIB *) handle)->sock, data, len, 0);
+
+	if(ret < 0) {
+		if(((IRCLIB *)handle)->callbacks[IRCLIB_ERROR])
+			((IRCLIB *)handle)->callbacks[IRCLIB_ERROR](handle, IRCLIB_ERROR_DISCONNECTED);
+		((IRCLIB *)handle)->connected = 0;
+		shutdown(((IRCLIB *)handle)->sock, 0x02);
+		((IRCLIB *)handle)->sock = -1;
+	} 
+
+	return ret;
 }
 
 /* PROTO */
