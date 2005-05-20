@@ -85,3 +85,19 @@ irclib_whois(void *handle, char *nick)
 	send_cmdpkt(handle, pkt);
 	pkt_free(pkt);
 }
+
+/* PROTO */
+void
+irclib_op(void *handle, char *chan, char *nick)
+{
+	pkt_t *pkt;
+
+	pkt = pkt_init(9+strlen(chan)+strlen(nick));
+	pkt_addstr(pkt, "MODE ");
+	pkt_addstr(pkt, chan);
+	pkt_addstr(pkt, " +o ");
+	pkt_addstr(pkt, nick);
+
+	send_cmdpkt(handle, pkt);
+	pkt_free(pkt);
+}
