@@ -10,6 +10,21 @@
  ** Please see the COPYING file for more details.
  **/
 
+#ifndef IRCLIB_H
+#define IRCLIB_H
+
+#ifdef PLAN9
+#define _POSIX_SOURCE
+#define _BSD_EXTENSION
+#define _POSIX_EXTENSION
+#include <errno.h>
+
+#define uint32_t unsigned long
+#define uint16_t unsigned short
+#define uint8_t unsigned char
+#define int32_t long
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -150,3 +165,5 @@ typedef struct IRCLib_Packet {
 
 #include "byteswap.h"
 #include "protos.h"
+
+#endif
