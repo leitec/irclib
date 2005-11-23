@@ -107,13 +107,26 @@ irclib_connect(void *handle, char *server, uint16_t port)
 	}
 #endif
 
+	/* Fix by graue@oceanbase.org:
+	 * Some servers do not allow hostname and servername
+	 * to be 'x' and detect irclib clients as a spambot
+	 *
+	 * To fix, send username again.
+	 */
+
 	connectpkt = pkt_init(5 + strlen(hptr->username) + 1 +
-			      2 + 2 + strlen(hptr->realname) + 3);
+				strlen(hptr->username) + 1 +
+				strlen(hptr->username) + 1 +
+				strlen(hptr->realname) + 3);
 
 	pkt_addstr(connectpkt, "USER ");
 	pkt_addstr(connectpkt, hptr->username);
-	pkt_addstr(connectpkt, " x x :");
-	pkt_addstr(connectpkt, hptr->realname);
+	pkt_addstr(connectpkt, " ");
+	pkt_addstr(connectpkt, hptr->username); /* "hostname" */
+	pkt_addstr(connectpkt, " ");
+	pkt_addstr(connectpkt, hptr->username); /* "servername" */
+	pkt_addstr(connectpkt, " :");
+	pkt_addstr(connectpkt, hptr->realname); 
 	pkt_addstr(connectpkt, "\r\n");
 
 	sendPkt(handle, connectpkt);
