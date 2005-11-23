@@ -100,20 +100,20 @@ irclib_setnick(void *handle, char *nickname)
 void
 irclib_setname(void *handle, char *name)
 {
-	if(((IRCLIB *)handle)->realname != NULL)
-		free(((IRCLIB *)handle)->realname);
+	if (((IRCLIB *) handle)->realname != NULL)
+		free(((IRCLIB *) handle)->realname);
 
-	((IRCLIB *)handle)->realname = strdup(name);
+	((IRCLIB *) handle)->realname = strdup(name);
 }
 
 /* PROTO */
 void
 irclib_setusername(void *handle, char *name)
 {
-	if(((IRCLIB *)handle)->username != NULL)
-		free(((IRCLIB *)handle)->username);
+	if (((IRCLIB *) handle)->username != NULL)
+		free(((IRCLIB *) handle)->username);
 
-	((IRCLIB *)handle)->username = strdup(name);
+	((IRCLIB *) handle)->username = strdup(name);
 }
 
 /* PROTO */
@@ -125,7 +125,7 @@ irclib_select(int nfds, fd_set * readfds, fd_set * writefds, fd_set * exceptfds,
 
 	size_t          bytesread, bytesparsed;
 	size_t          nextcr, nextnl;
-	int		nocr;
+	int             nocr;
 	int             maxfd = nfds;
 	unsigned char   recvbuf[513];
 	unsigned char  *bufptr, *messagestr;
@@ -151,8 +151,8 @@ irclib_select(int nfds, fd_set * readfds, fd_set * writefds, fd_set * exceptfds,
 				tmp->handle->sock = -1;
 				tmp->handle->connected = 0;
 
-				if(tmp->handle->callbacks[IRCLIB_ERROR])
-					tmp->handle->callbacks[IRCLIB_ERROR](tmp->handle, IRCLIB_ERROR_DISCONNECTED);
+				if (tmp->handle->callbacks[IRCLIB_ERROR])
+					tmp->handle->callbacks[IRCLIB_ERROR] (tmp->handle, IRCLIB_ERROR_DISCONNECTED);
 
 				return IRCLIB_RET_ERROR;
 			}
@@ -182,14 +182,13 @@ irclib_select(int nfds, fd_set * readfds, fd_set * writefds, fd_set * exceptfds,
 				nextcr = chrdist((char *) bufptr, '\r');
 				nextnl = chrdist((char *) bufptr, '\n');
 
-				/* 
-				 * Fix by graue@oceanbase.org:
-				 * Some servers omit \r after certain
-				 * messages (against RFC specs, but oh well)
+				/*
+				 * Fix by graue@oceanbase.org: Some servers
+				 * omit \r after certain messages (against
+				 * RFC specs, but oh well)
 				 */
 
-				if(nextnl < nextcr)
-				{
+				if (nextnl < nextcr) {
 					nextcr = nextnl;
 					nocr = 1;
 				} else {
@@ -210,7 +209,7 @@ irclib_select(int nfds, fd_set * readfds, fd_set * writefds, fd_set * exceptfds,
 				bytesparsed += nextcr + 1 + !nocr;
 				bufptr += nextcr + 1 + !nocr;
 
-				parse_message(tmp->handle, (char *)messagestr);
+				parse_message(tmp->handle, (char *) messagestr);
 				free(messagestr);
 			}
 

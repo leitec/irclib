@@ -15,33 +15,33 @@
 void
 irc_msg(void *handle, char *nick, char *host, char *target, char *message)
 {
-	if(target[0] == '#') {
+	if (target[0] == '#') {
 		printf("%s <%s> %s\n", target, nick, message);
 	} else {
 		printf("[%s(%s)] %s\n", nick, host, message);
 	}
 }
 
-void 
+void
 irc_motd(void *handle, char *motd)
 {
 	printf("** %s\n", motd);
 }
 
-void 
+void
 irc_ready(void *handle)
 {
 	printf("** Ready.\n");
 	irclib_join(handle, "#irclib");
 }
 
-void 
+void
 irc_join(void *handle, char *nick, char *host, char *channel)
 {
 	printf("** %s [%s] has joined %s.\n", nick, host, channel);
 }
 
-int 
+int
 main(void)
 {
 	void           *handle;

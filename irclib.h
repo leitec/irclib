@@ -120,7 +120,7 @@ enum {
 
 typedef struct Split {
 	size_t          num;
-	char       **data;
+	char          **data;
 }               split_t;
 
 typedef struct IRCLib {
@@ -140,7 +140,7 @@ typedef struct IRCLib {
 	void            (*callbacks[NUM_CALLBACKS]) (void *,...);
 	char           *nickname;
 	char           *realname;
-	char	       *username;
+	char           *username;
 	unsigned char  *buffered;
 	size_t          waiting_len;
 	int             isidle;

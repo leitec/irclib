@@ -22,18 +22,17 @@
 ssize_t
 socksend(void *handle, unsigned char *data, size_t len)
 {
-	ssize_t ret;
+	ssize_t         ret;
 
-	ret =  send(((IRCLIB *) handle)->sock, data, len, 0);
+	ret = send(((IRCLIB *) handle)->sock, data, len, 0);
 
-	if(ret < 0) {
-		if(((IRCLIB *)handle)->callbacks[IRCLIB_ERROR])
-			((IRCLIB *)handle)->callbacks[IRCLIB_ERROR](handle, IRCLIB_ERROR_DISCONNECTED);
-		((IRCLIB *)handle)->connected = 0;
-		shutdown(((IRCLIB *)handle)->sock, 0x02);
-		((IRCLIB *)handle)->sock = -1;
-	} 
-
+	if (ret < 0) {
+		if (((IRCLIB *) handle)->callbacks[IRCLIB_ERROR])
+			((IRCLIB *) handle)->callbacks[IRCLIB_ERROR] (handle, IRCLIB_ERROR_DISCONNECTED);
+		((IRCLIB *) handle)->connected = 0;
+		shutdown(((IRCLIB *) handle)->sock, 0x02);
+		((IRCLIB *) handle)->sock = -1;
+	}
 	return ret;
 }
 
@@ -46,14 +45,14 @@ sendPkt(void *handle, pkt_t * packet)
 
 /* PROTO */
 ssize_t
-send_cmdpkt(void *handle, pkt_t *packet)
+send_cmdpkt(void *handle, pkt_t * packet)
 {
-	pkt_t *n;
-	ssize_t ret;
+	pkt_t          *n;
+	ssize_t         ret;
 
-	n = pkt_init(2+packet->len);
+	n = pkt_init(2 + packet->len);
 	pkt_addraw(n, packet->data, packet->len);
-	pkt_addraw(n, (unsigned char *)"\r\n", 2);
+	pkt_addraw(n, (unsigned char *) "\r\n", 2);
 
 	ret = sendPkt(handle, n);
 	pkt_free(n);
@@ -107,26 +106,26 @@ irclib_connect(void *handle, char *server, uint16_t port)
 	}
 #endif
 
-	/* Fix by graue@oceanbase.org:
-	 * Some servers do not allow hostname and servername
-	 * to be 'x' and detect irclib clients as a spambot
-	 *
+	/*
+	 * Fix by graue@oceanbase.org: Some servers do not allow hostname and
+	 * servername to be 'x' and detect irclib clients as a spambot
+	 * 
 	 * To fix, send username again.
 	 */
 
 	connectpkt = pkt_init(5 + strlen(hptr->username) + 1 +
-				strlen(hptr->username) + 1 +
-				strlen(hptr->username) + 1 +
-				strlen(hptr->realname) + 3);
+			      strlen(hptr->username) + 1 +
+			      strlen(hptr->username) + 1 +
+			      strlen(hptr->realname) + 3);
 
 	pkt_addstr(connectpkt, "USER ");
 	pkt_addstr(connectpkt, hptr->username);
 	pkt_addstr(connectpkt, " ");
-	pkt_addstr(connectpkt, hptr->username); /* "hostname" */
+	pkt_addstr(connectpkt, hptr->username);	/* "hostname" */
 	pkt_addstr(connectpkt, " ");
-	pkt_addstr(connectpkt, hptr->username); /* "servername" */
+	pkt_addstr(connectpkt, hptr->username);	/* "servername" */
 	pkt_addstr(connectpkt, " :");
-	pkt_addstr(connectpkt, hptr->realname); 
+	pkt_addstr(connectpkt, hptr->realname);
 	pkt_addstr(connectpkt, "\r\n");
 
 	sendPkt(handle, connectpkt);

@@ -13,7 +13,7 @@
 #include "irclib.h"
 
 /* PROTO */
-void 
+void
 i_free(split_t * s)
 {
 	size_t          x;
