@@ -55,7 +55,7 @@ parse_command(void *handle, char *message, split_t * tokens)
 	char           *nick = NULL, *host = NULL;
 	char           *from = tok[0] + 1;
 	size_t          len, toklen;
-	int             argnum = 0, pos;
+	int             argnum = 0, pos, handled = 0;
 
 	if (strchr((char *) from, '!') != NULL) {
 		len = chrdist((char *) from, '!');
@@ -68,6 +68,8 @@ parse_command(void *handle, char *message, split_t * tokens)
 	if (strncmp(tok[1], "JOIN", 4) == 0) {
 		char           *chan;
 
+		handled = 1;
+
 		if (tok[2][0] == ':')
 			chan = tolower_str(tok[2] + 1);
 		else
@@ -79,6 +81,8 @@ parse_command(void *handle, char *message, split_t * tokens)
 	} else if (strncmp(tok[1], "PART", 4) == 0) {
 		char           *chan;
 
+		handled = 1;
+
 		if (tok[2][0] == ':')
 			chan = tolower_str(tok[2] + 1);
 		else
@@ -89,6 +93,8 @@ parse_command(void *handle, char *message, split_t * tokens)
 		free(chan);
 	} else if (strncmp(tok[1], "NOTICE", 6) == 0) {
 		char           *msgptr;
+
+		handled = 1;
 
 		/*
 		 * see note on privmsg below
@@ -106,6 +112,8 @@ parse_command(void *handle, char *message, split_t * tokens)
 	} else if (strncmp(tok[1], "PRIVMSG", 7) == 0) {
 		char           *msgptr;
 		char           *target;
+
+		handled = 1;
 
 		/*
 		 * we have to do this, otherwise
@@ -135,11 +143,15 @@ parse_command(void *handle, char *message, split_t * tokens)
 
 		free(target);
 	} else if (strncmp(tok[1], "NICK", 4) == 0) {
+		handled = 1;
+
 		if (((IRCLIB *) handle)->callbacks[IRCLIB_NICKCHANGE] != NULL)
 			((IRCLIB *) handle)->callbacks[IRCLIB_NICKCHANGE] (handle, nick, tok[2] + 1);
 	} else if (strncmp(tok[1], "MODE", 4) == 0) {
 		int             plus = 1;
 		char           *fromptr;
+
+		handled = 1;
 
 		if (nick == NULL)
 			fromptr = from;
@@ -171,14 +183,22 @@ parse_command(void *handle, char *message, split_t * tokens)
 	} else if (strncmp(tok[1], "QUIT", 4) == 0) {
 		char           *msgptr;
 
+		handled = 1;
+
 		msgptr = strchr(message, ' ');
 		msgptr = strchr(msgptr + 1, ':');
 
 		if (((IRCLIB *) handle)->callbacks[IRCLIB_QUIT] != NULL)
 			((IRCLIB *) handle)->callbacks[IRCLIB_QUIT] (handle, nick, msgptr + 1);
 	}
+
 	if (nick != NULL)
 		free(nick);
+
+	if(!handled) {
+		if(((IRCLIB *)handle)->callbacks[IRCLIB_UNHANDLED] != NULL)
+			((IRCLIB *)handle)->callbacks[IRCLIB_UNHANDLED] (handle, message);
+	}
 }
 
 /* PROTO */
@@ -251,6 +271,8 @@ parse_numeric(void *handle, char *message, split_t * tokens, int numeric)
 			((IRCLIB *) handle)->callbacks[IRCLIB_NICKINUSE] (handle, tok[3]);
 		break;
 	default:
+		if (((IRCLIB *)handle)->callbacks[IRCLIB_UNHANDLED] != NULL)
+			((IRCLIB *)handle)->callbacks[IRCLIB_UNHANDLED] (handle, message);
 		break;
 	}
 }
