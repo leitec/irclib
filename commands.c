@@ -101,3 +101,19 @@ irclib_op(void *handle, char *chan, char *nick)
 	send_cmdpkt(handle, pkt);
 	pkt_free(pkt);
 }
+
+/* PROTO */
+void
+irclib_notice(void *handle, char *target, char *message)
+{
+	pkt_t          *pkt;
+
+	pkt = pkt_init(9 + strlen(target) + strlen(message));
+	pkt_addstr(pkt, "NOTICE ");
+	pkt_addstr(pkt, target);
+	pkt_addstr(pkt, " :");
+	pkt_addstr(pkt, message);
+
+	send_cmdpkt(handle, pkt);
+	pkt_free(pkt);
+}

@@ -109,7 +109,7 @@ irclib_connect(void *handle, char *server, uint16_t port)
 	/*
 	 * Fix by graue@oceanbase.org: Some servers do not allow hostname and
 	 * servername to be 'x' and detect irclib clients as a spambot
-	 * 
+	 *
 	 * To fix, send username again.
 	 */
 

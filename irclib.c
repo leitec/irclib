@@ -202,7 +202,6 @@ irclib_select(int nfds, fd_set * readfds, fd_set * writefds, fd_set * exceptfds,
 					tmp->handle->buffered[tmp->handle->waiting_len] = 0;
 					break;
 				}
-
 				messagestr = malloc(nextcr + 1);
 				memcpy(messagestr, bufptr, nextcr);
 				messagestr[nextcr] = 0;

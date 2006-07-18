@@ -191,13 +191,12 @@ parse_command(void *handle, char *message, split_t * tokens)
 		if (((IRCLIB *) handle)->callbacks[IRCLIB_QUIT] != NULL)
 			((IRCLIB *) handle)->callbacks[IRCLIB_QUIT] (handle, nick, msgptr + 1);
 	}
-
 	if (nick != NULL)
 		free(nick);
 
-	if(!handled) {
-		if(((IRCLIB *)handle)->callbacks[IRCLIB_UNHANDLED] != NULL)
-			((IRCLIB *)handle)->callbacks[IRCLIB_UNHANDLED] (handle, message);
+	if (!handled) {
+		if (((IRCLIB *) handle)->callbacks[IRCLIB_UNHANDLED] != NULL)
+			((IRCLIB *) handle)->callbacks[IRCLIB_UNHANDLED] (handle, message);
 	}
 }
 
@@ -271,8 +270,8 @@ parse_numeric(void *handle, char *message, split_t * tokens, int numeric)
 			((IRCLIB *) handle)->callbacks[IRCLIB_NICKINUSE] (handle, tok[3]);
 		break;
 	default:
-		if (((IRCLIB *)handle)->callbacks[IRCLIB_UNHANDLED] != NULL)
-			((IRCLIB *)handle)->callbacks[IRCLIB_UNHANDLED] (handle, message);
+		if (((IRCLIB *) handle)->callbacks[IRCLIB_UNHANDLED] != NULL)
+			((IRCLIB *) handle)->callbacks[IRCLIB_UNHANDLED] (handle, message);
 		break;
 	}
 }
