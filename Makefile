@@ -9,7 +9,7 @@ LIB=libirc.a
 #CC=i386-pc-msdosdjgpp-gcc
 #CC=i386-mingw32msvc-gcc
 CC=gcc
-CFLAGS=-O2 -g3 -Wall -pedantic -pipe
+CFLAGS=-Os -pipe
 #CFLAGS+=-I/usr/local/djgpp/watt/inc
 #
 # Add -lsocket -lnsl for Solaris
