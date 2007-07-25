@@ -61,8 +61,9 @@ send_cmdpkt(void *handle, pkt_t * packet)
 
 /* PROTO */
 size_t
-chrdist(char *str, char ch)
+chrdist(const char *str, char ch)
 {
+#if 0
 	size_t          x;
 	size_t          len = strlen(str);
 
@@ -72,6 +73,15 @@ chrdist(char *str, char ch)
 	}
 
 	return 0;
+#endif
+	char *pos;
+
+	pos = strchr(str, ch);
+	if(pos != NULL) {
+		return (size_t)(pos - str);
+	} else {
+		return 0;
+	}
 }
 
 /* PROTO */
