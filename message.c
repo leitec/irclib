@@ -223,6 +223,12 @@ parse_numeric(void *handle, char *message, split_t * tokens, int numeric)
 		if (((IRCLIB *) handle)->callbacks[IRCLIB_WHOIS_SERVER] != NULL)
 			((IRCLIB *) handle)->callbacks[IRCLIB_WHOIS_SERVER] (handle, tok[3], tok[4], datastart + 1);
 		break;
+	case 317:
+		if (((IRCLIB *) handle)->callbacks[IRCLIB_WHOIS_IDLETIME] != NULL)
+			((IRCLIB *)handle)->callbacks[IRCLIB_WHOIS_IDLETIME] (handle, tok[3], strtol(tok[4], NULL, 10));
+		break;
+	case 318:
+		break;
 	case 319:
 		datastart = (unsigned char *) strchr((char *) message + 1, ':');
 		if (((IRCLIB *) handle)->callbacks[IRCLIB_WHOIS_CHANNELS] != NULL)
