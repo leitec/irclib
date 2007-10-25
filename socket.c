@@ -94,7 +94,7 @@ irclib_connect(void *handle, char *server, uint16_t port)
 #ifdef MACINTOSH_CLASSIC
 
 #else
-	struct sockaddr_in sin;
+	struct sockaddr_in sin, l_addr;
 	struct hostent *he;
 
 	if ((he = gethostbyname(server)) == NULL) {
@@ -109,6 +109,21 @@ irclib_connect(void *handle, char *server, uint16_t port)
 	sin.sin_port = htons(port);
 	sin.sin_addr = *((struct in_addr *) he->h_addr);
 	memset(&(sin.sin_zero), 0, 8);
+
+	if(hptr->hostname)
+	{
+		if ((he = gethostbyname(hptr->hostname)) == NULL) {
+			perror("gethostbyname()");
+		} else {
+			l_addr.sin_family = AF_INET;
+			l_addr.sin_port = 0;
+			l_addr.sin_addr = *((struct in_addr *)he->h_addr);
+			memset(&(l_addr.sin_zero), 0, 8);
+
+			if(bind(hptr->sock, (struct sockaddr *)&l_addr, sizeof(l_addr)))
+				perror("bind()");
+		}
+	}
 
 	if (connect(hptr->sock, (struct sockaddr *) & sin, sizeof(struct sockaddr)) == -1) {
 		perror("connect()");

@@ -143,6 +143,7 @@ typedef struct IRCLib {
 	char           *nickname;
 	char           *realname;
 	char           *username;
+	char	       *hostname;
 	unsigned char  *buffered;
 	size_t          waiting_len;
 	int             isidle;

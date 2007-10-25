@@ -32,6 +32,7 @@ irclib_create_handle(void)
 	h->data_len = 0;
 	h->connected = 0;
 	h->nickname = NULL;
+	h->hostname = NULL;
 	h->isaway = 0;
 	h->isidle = 0;
 	h->buffered = 0;
@@ -104,6 +105,16 @@ irclib_setname(void *handle, char *name)
 		free(((IRCLIB *) handle)->realname);
 
 	((IRCLIB *) handle)->realname = strdup(name);
+}
+
+/* PROTO */
+void
+irclib_sethostname(void *handle, char *name)
+{
+	if (((IRCLIB *) handle)->hostname != NULL)
+		free(((IRCLIB *) handle)->hostname);
+
+	((IRCLIB *) handle)->hostname = strdup(name);
 }
 
 /* PROTO */
