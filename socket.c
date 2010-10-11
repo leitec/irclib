@@ -86,7 +86,7 @@ chrdist(const char *str, char ch)
 
 /* PROTO */
 IRCLIB_RET
-irclib_connect(void *handle, char *server, uint16_t port)
+irclib_connect(void *handle, char *server, uint16_t port, uint8_t version)
 {
 	IRCLIB         *hptr = (IRCLIB *) handle;
 	pkt_t          *connectpkt;
@@ -96,7 +96,54 @@ irclib_connect(void *handle, char *server, uint16_t port)
 #else
 	struct sockaddr_in sin, l_addr;
 	struct hostent *he;
+#ifdef USE_IPV6
+	struct addrinfo hints, *res, *res0;
+	struct sockaddr_storage sins;
+	char srvname[6];
 
+	memset(&hints, 0, sizeof(hints));
+	hints.ai_family = PF_UNSPEC;
+	hints.ai_socktype = SOCK_STREAM;
+
+	snprintf(srvname, 6, "%d", port);
+	srvname[5] = 0;
+
+	if(getaddrinfo(server, srvname, &hints, &res0) != 0) {
+		perror("getaddrinfo()");
+		return IRCLIB_RET_ERROR;
+	}
+
+	hptr->sock = -1;
+
+	for(res = res0; res; res = res->ai_next) {
+		if(version == 6 && res->ai_family == AF_INET)
+			continue;
+		else if(version == 4 && res->ai_family == AF_INET6)
+			continue;
+
+		hptr->sock = socket(res->ai_family, res->ai_socktype,
+			res->ai_protocol);
+		if(hptr->sock < 0) {
+			perror("socket()");
+			continue;
+		}
+
+		if(connect(hptr->sock, res->ai_addr, res->ai_addrlen) < 0) {
+			perror("connect()");
+			close(hptr->sock);
+			hptr->sock = -1;
+			continue;
+		}
+
+		break;
+	}
+
+	if(hptr->sock < 0) {
+		return IRCLIB_RET_ERROR;
+	}
+
+	freeaddrinfo(res0);
+#else
 	if ((he = gethostbyname(server)) == NULL) {
 		perror("gethostbyname()");
 		return IRCLIB_RET_ERROR;
@@ -129,6 +176,7 @@ irclib_connect(void *handle, char *server, uint16_t port)
 		perror("connect()");
 		return IRCLIB_RET_ERROR;
 	}
+#endif
 #endif
 
 	/*

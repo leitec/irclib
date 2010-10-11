@@ -40,6 +40,6 @@ ssize_t socksend (void *handle, unsigned char *data, size_t len);
 ssize_t sendPkt (void *handle, pkt_t * packet);
 ssize_t send_cmdpkt (void *handle, pkt_t * packet);
 size_t chrdist (const char *str, char ch);
-IRCLIB_RET irclib_connect (void *handle, char *server, uint16_t port);
+IRCLIB_RET irclib_connect (void *handle, char *server, uint16_t port, uint8_t version);
 void i_free (split_t * s);
 split_t        * i_split (char *str);
