@@ -138,7 +138,7 @@ irclib_select(int nfds, fd_set * readfds, fd_set * writefds, fd_set * exceptfds,
 	ssize_t          nextcr, nextnl;
 	int             nocr;
 	int             maxfd = nfds;
-	unsigned char   recvbuf[513];
+	unsigned char   recvbuf[4097];
 	unsigned char  *bufptr, *messagestr;
 
 	for (tmp = handles; tmp != NULL; tmp = tmp->next) {
@@ -156,7 +156,7 @@ irclib_select(int nfds, fd_set * readfds, fd_set * writefds, fd_set * exceptfds,
 			continue;
 
 		if (FD_ISSET(tmp->handle->sock, readfds)) {
-			bytesread = recv(tmp->handle->sock, recvbuf, 512, 0);
+			bytesread = recv(tmp->handle->sock, recvbuf, 4096, 0);
 			if (bytesread <= 0) {
 				shutdown(tmp->handle->sock, 0x02);
 				tmp->handle->sock = -1;
