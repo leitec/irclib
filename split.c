@@ -34,6 +34,9 @@ i_split(char *str)
 
 	len = strlen(str);
 
+	if(str[len-1] == ' ')
+		len--;
+
 	for (x = 0; x < len; x++)
 		if (str[x] == ' ')
 			num++;
